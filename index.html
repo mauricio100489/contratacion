@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proceso de Selección y Contratación - Grupo ELCATEX</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    min-height: 100vh;
+    padding: 28px 16px;
+    color: #e2e8f0;
+  }
+
+  /* Login */
+  .login-overlay {
+    position: fixed; top:0; left:0; width:100%; height:100%;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+  }
+  .login-overlay.hidden { display: none; }
+  .login-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 40px 36px;
+    width: 380px;
+    max-width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    text-align: center;
+  }
+  .login-box .login-icon {
+    width: 64px; height: 64px; border-radius: 16px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px; margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(99,102,241,0.3);
+  }
+  .login-box h2 { font-size: 20px; color: #fff; margin-bottom: 4px; }
+  .login-box .login-sub { font-size: 12px; color: #64748b; margin-bottom: 28px; }
+  .login-box label { display: block; text-align: left; font-size: 12px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; }
+  .login-box input {
+    width: 100%; padding: 12px 16px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    color: #fff; font-size: 14px; outline: none;
+    margin-bottom: 18px; transition: border 0.2s;
+  }
+  .login-box input:focus { border-color: #3b82f6; }
+  .login-box input::placeholder { color: #475569; }
+  .login-btn {
+    width: 100%; padding: 13px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border: none; border-radius: 10px;
+    color: #fff; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+  }
+  .login-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(99,102,241,0.4); }
+  .login-btn:active { transform: translateY(0); }
+  .login-error {
+    color: #f87171; font-size: 12px; margin-top: 14px;
+    display: none; background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px; padding: 8px 12px;
+  }
+  .login-error.show { display: block; }
+  .container { max-width: 800px; margin: 0 auto; }
+
+  /* Header */
+  .header { text-align: center; margin-bottom: 36px; }
+  .header-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: 14px;
+    padding: 16px 36px;
+    margin-bottom: 8px;
+    box-shadow: 0 8px 32px rgba(99,102,241,0.25);
+  }
+  .header-badge h1 { font-size: 22px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+  .header-badge .company { font-size: 13px; color: #c7d2fe; margin-top: 4px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; }
+  .header p { color: #64748b; font-size: 13px; margin-top: 8px; }
+
+  /* Phase Buttons */
+  .phase-nav { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 32px; }
+  .phase-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .phase-btn:hover { background: rgba(255,255,255,0.1); }
+  .phase-btn.active { color: #fff; }
+
+  /* Phase */
+  .phase { margin-bottom: 8px; transition: opacity 0.3s; }
+  .phase.dimmed { opacity: 0.2; pointer-events: none; }
+  .phase-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .phase-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .phase-title { font-size: 13px; font-weight: 700; letter-spacing: 1.2px; }
+  .phase-line { flex: 1; height: 1px; }
+
+  /* Steps */
+  .steps { margin-left: 19px; padding-left: 26px; }
+  .step-wrapper { position: relative; margin-bottom: 4px; }
+  .step-dot {
+    position: absolute; left: -32px; top: 17px;
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .arrow { text-align: center; font-size: 16px; margin: 2px 0; opacity: 0.5; }
+  .phase-connector { text-align: center; margin: 4px 0 14px; font-size: 20px; opacity: 0.3; }
+
+  /* Cards */
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 13px 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .step-text { font-size: 13px; font-weight: 600; color: #fff; }
+  .step-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .step-dept { font-size: 10px; margin-top: 3px; font-weight: 500; }
+
+  /* Start / End */
+  .start-card {
+    border-radius: 50px; padding: 16px 28px; text-align: center;
+    box-shadow: 0 4px 24px rgba(59,130,246,0.3);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+  }
+  .start-card .step-text { font-size: 15px; }
+  .start-card .step-dept { color: #bfdbfe; }
+  .end-card {
+    border-radius: 50px; padding: 16px 28px; text-align: center;
+    box-shadow: 0 4px 24px rgba(16,185,129,0.3);
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+  .end-card .step-text { font-size: 15px; }
+
+  /* Filter Badge */
+  .filter-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    border-radius: 6px; padding: 2px 12px; margin-bottom: 6px;
+    font-size: 10px; font-weight: 700; color: #fff; letter-spacing: 1px;
+  }
+
+  /* Decision */
+  .decision-card {
+    background: rgba(255,255,255,0.04);
+    border-width: 2px; border-style: solid;
+    border-radius: 12px; padding: 14px;
+  }
+  .decision-header { display: flex; align-items: center; gap: 10px; }
+  .diamond {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; transform: rotate(45deg); flex-shrink: 0; color: #fff;
+  }
+  .diamond span { transform: rotate(-45deg); }
+  .decision-paths { display: flex; gap: 8px; margin-top: 12px; }
+  .path-yes {
+    flex: 1; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
+    border-radius: 8px; padding: 7px 10px; text-align: center;
+    font-size: 11px; color: #34d399; font-weight: 600;
+  }
+  .path-no {
+    flex: 1; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px; padding: 7px 10px; text-align: center;
+    font-size: 11px; color: #f87171; font-weight: 600;
+  }
+
+  /* Docs */
+  .docs-header { display: flex; justify-content: space-between; align-items: center; }
+  .docs-btn {
+    border: none; color: #fff; border-radius: 6px;
+    padding: 5px 14px; font-size: 11px; cursor: pointer; font-weight: 600;
+  }
+  .docs-grid {
+    display: none; margin-top: 12px;
+    grid-template-columns: 1fr 1fr; gap: 5px;
+  }
+  .docs-grid.show { display: grid; }
+  .doc-item {
+    background: rgba(255,255,255,0.05); border-radius: 6px;
+    padding: 7px 10px; font-size: 11px; color: #cbd5e1;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center; margin-top: 28px; padding: 16px;
+    background: rgba(255,255,255,0.03); border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+    font-size: 11px; color: #475569;
+  }
+</style>
+</head>
+<body>
+<!-- Login Screen -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <h2>Grupo ELCATEX</h2>
+    <div class="login-sub">Inicie sesión para acceder al diagrama de flujo</div>
+    <label for="username">Usuario</label>
+    <input type="text" id="username" placeholder="Ingrese su usuario" autocomplete="off">
+    <label for="password">Contraseña</label>
+    <input type="password" id="password" placeholder="Ingrese su contraseña">
+    <button class="login-btn" onclick="handleLogin()">Iniciar Sesión</button>
+    <div class="login-error" id="loginError">⚠ Usuario o contraseña incorrectos. Intente de nuevo.</div>
+  </div>
+</div>
+
+<div class="container" id="mainContent" style="display:none">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">
+      <h1>Proceso de Selección y Contratación</h1>
+      <div class="company">Grupo ELCATEX</div>
+    </div>
+    <p>Diagrama de flujo completo del proceso de RRHH</p>
+  </div>
+
+  <!-- Phase Navigation -->
+  <div class="phase-nav" id="phaseNav"></div>
+
+  <!-- Flow Content -->
+  <div id="flowContent"></div>
+
+  <!-- Footer -->
+  <div class="footer">Proceso de Selección y Contratación · Grupo ELCATEX · 6 Fases · 3 Filtros de Decisión · 21 Pasos</div>
+</div>
+
+<script>
+// Login
+function handleLogin() {
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value;
+  if (user === 'admin' && pass === 'gerencia1') {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainContent').style.display = '';
+  } else {
+    document.getElementById('loginError').classList.add('show');
+    document.getElementById('password').value = '';
+  }
+}
+document.getElementById('password').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') handleLogin();
+});
+document.getElementById('username').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') document.getElementById('password').focus();
+});
+
+const phases = [
+  { name:"FASE 1: RECLUTAMIENTO", color:"#3B82F6", border:"#93C5FD", icon:"📢",
+    steps:[
+      {id:1, text:"Apertura de Plaza Laboral", type:"start", dept:"RRHH"},
+      {id:2, text:"Publicación de la Plaza", sub:"Interna / Externa", type:"process", dept:"RRHH"},
+      {id:3, text:"Recepción de CVs", type:"process", dept:"RRHH"}
+    ]},
+  { name:"FASE 2: SELECCIÓN TÉCNICA", color:"#8B5CF6", border:"#C4B5FD", icon:"🔍",
+    steps:[
+      {id:4, text:"RRHH comparte CVs al Gerente del Área", type:"process", dept:"RRHH → Gerencia", filter:"FILTRO 1"},
+      {id:5, text:"Selección de CVs por Gerencia de Planta", type:"process", dept:"Gerencia"},
+      {id:6, text:"Prueba Técnica", sub:"(Si aplica)", type:"process", dept:"Gerencia"},
+      {id:7, text:"Entrevista con el Gerente", type:"process", dept:"Gerencia"},
+      {id:8, text:"¿Aprueba el Gerente?", type:"decision", dept:"Gerencia", filter:"FILTRO 2", noPath:"Fin del proceso para el candidato"}
+    ]},
+  { name:"FASE 3: EVALUACIÓN RRHH", color:"#F59E0B", border:"#FCD34D", icon:"📋",
+    steps:[
+      {id:9, text:"Se envían CVs filtrados a RRHH", type:"process", dept:"Gerencia → RRHH"},
+      {id:10, text:"Aplicación de Pruebas Psicométricas", type:"process", dept:"RRHH"},
+      {id:11, text:"Análisis Médicos", type:"process", dept:"RRHH"},
+      {id:12, text:"¿Aprueba pruebas?", type:"decision", dept:"RRHH", filter:"FILTRO 3", noPath:"Fin del proceso para el candidato"}
+    ]},
+  { name:"FASE 4: NEGOCIACIÓN Y OFERTA", color:"#10B981", border:"#6EE7B7", icon:"🤝",
+    steps:[
+      {id:13, text:"Entrevista RRHH: Negociación salarial y fecha de ingreso", type:"process", dept:"RRHH"},
+      {id:14, text:"¿Acepta la oferta?", type:"decision", dept:"Candidato", noPath:"Fin del proceso"},
+      {id:15, text:"Envío de Propuesta Formal", type:"process", dept:"RRHH"}
+    ]},
+  { name:"FASE 5: CONTRATACIÓN", color:"#EF4444", border:"#FCA5A5", icon:"📄",
+    steps:[
+      {id:16, text:"Solicitud de Documentación", type:"docs", dept:"RRHH / Candidato"},
+      {id:17, text:"Firma de Contrato", type:"process", dept:"RRHH / Candidato"},
+      {id:18, text:"Afiliación IHSS / Creación Cuenta Planilla", type:"process", dept:"RRHH"}
+    ]},
+  { name:"FASE 6: INDUCCIÓN", color:"#06B6D4", border:"#67E8F9", icon:"🎓",
+    steps:[
+      {id:19, text:"Capacitación General", sub:"Empresa · Derechos · Deberes · Beneficios · Seguridad Informática", type:"process", dept:"RRHH"},
+      {id:20, text:"Entrega al Área Laboral", type:"process", dept:"RRHH → Área"},
+      {id:21, text:"Proceso Finalizado", type:"end", dept:""}
+    ]}
+];
+
+const docs = ["Referencia Personal","Fotografías Tamaño Carnet","Carnet COVID-19","Referencia Laboral","Copia de Títulos / Certificados","Antecedentes Penales","Antecedentes Policiales","Copia de DNI"];
+
+let activePhase = null;
+
+function renderNav() {
+  const nav = document.getElementById('phaseNav');
+  nav.innerHTML = phases.map((p,i) =>
+    `<button class="phase-btn ${activePhase===i?'active':''}" style="${activePhase===i?`background:${p.color};border-color:${p.color}`:''}" onclick="togglePhase(${i})">${p.icon} Fase ${i+1}</button>`
+  ).join('');
+}
+
+function togglePhase(i) {
+  activePhase = activePhase===i ? null : i;
+  renderNav();
+  document.querySelectorAll('.phase').forEach((el,idx) => {
+    if (activePhase === null) {
+      el.style.display = '';
+    } else {
+      el.style.display = activePhase===idx ? '' : 'none';
+    }
+  });
+  document.querySelectorAll('.phase-connector').forEach((el,idx) => {
+    if (activePhase === null) {
+      el.style.display = '';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+}
+
+function toggleDocs() {
+  document.getElementById('docsGrid').classList.toggle('show');
+  const btn = document.getElementById('docsBtn');
+  btn.textContent = document.getElementById('docsGrid').classList.contains('show') ? 'Ocultar' : 'Ver lista';
+}
+
+function renderFlow() {
+  const container = document.getElementById('flowContent');
+  let html = '';
+
+  phases.forEach((phase, pi) => {
+    html += `<div class="phase" id="phase-${pi}">`;
+    // Phase header
+    html += `<div class="phase-header">
+      <div class="phase-icon" style="background:${phase.color}">${phase.icon}</div>
+      <div><div class="phase-title" style="color:${phase.color}">${phase.name}</div></div>
+      <div class="phase-line" style="background:linear-gradient(90deg,${phase.color}44,transparent)"></div>
+    </div>`;
+
+    // Steps
+    html += `<div class="steps" style="border-left:2px solid ${phase.color}44">`;
+    phase.steps.forEach((step, si) => {
+      html += `<div class="step-wrapper">`;
+      html += `<div class="step-dot" style="background:${phase.color}"></div>`;
+
+      if (step.filter) {
+        html += `<div class="filter-badge">⚡ ${step.filter}</div>`;
+      }
+
+      if (step.type === 'start') {
+        html += `<div class="start-card">
+          <div class="step-text">▶ ${step.text}</div>
+          <div class="step-dept" style="color:#bfdbfe;font-size:10px;margin-top:3px">${step.dept}</div>
+        </div>`;
+      } else if (step.type === 'end') {
+        html += `<div class="end-card">
+          <div class="step-text">✅ ${step.text}</div>
+        </div>`;
+      } else if (step.type === 'decision') {
+        html += `<div class="decision-card" style="border-color:${phase.color}">
+          <div class="decision-header">
+            <div class="diamond" style="background:${phase.color}"><span>◆</span></div>
+            <div>
+              <div class="step-text">${step.text}</div>
+              ${step.dept?`<div class="step-dept" style="color:#94a3b8">${step.dept}</div>`:''}
+            </div>
+          </div>
+          <div class="decision-paths">
+            <div class="path-yes">✓ Sí → Continúa</div>
+            <div class="path-no">✗ No → ${step.noPath}</div>
+          </div>
+        </div>`;
+      } else if (step.type === 'docs') {
+        html += `<div class="card" style="border-color:${phase.border};display:block">
+          <div class="docs-header">
+            <div><div class="step-text">📎 ${step.text}</div><div class="step-dept" style="color:#94a3b8">${step.dept}</div></div>
+            <button class="docs-btn" id="docsBtn" style="background:${phase.color}" onclick="toggleDocs()">Ver lista</button>
+          </div>
+          <div class="docs-grid" id="docsGrid">
+            ${docs.map(d => `<div class="doc-item"><span style="color:${phase.color}">•</span> ${d}</div>`).join('')}
+          </div>
+        </div>`;
+      } else {
+        html += `<div class="card">
+          <div class="step-num" style="background:${phase.color}22;color:${phase.color}">${step.id}</div>
+          <div>
+            <div class="step-text">${step.text}</div>
+            ${step.sub?`<div class="step-sub">${step.sub}</div>`:''}
+            ${step.dept?`<div class="step-dept" style="color:${phase.color}">${step.dept}</div>`:''}
+          </div>
+        </div>`;
+      }
+
+      if (si < phase.steps.length - 1) {
+        html += `<div class="arrow" style="color:${phase.color}">↓</div>`;
+      }
+      html += `</div>`;
+    });
+    html += `</div>`;
+
+    if (pi < phases.length - 1) {
+      html += `<div class="phase-connector" style="color:${phases[pi+1].color}">⬇</div>`;
+    }
+    html += `</div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+renderNav();
+renderFlow();
+</script>
+</body>
+</html>
